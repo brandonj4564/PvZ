@@ -5,6 +5,10 @@ import static tp1.utils.StringUtils.*;
 import tp1.p1.logic.Game;
 import tp1.utils.StringUtils;
 
+/**
+ * Print the current game state and board
+ *
+ */
 public class GamePrinter {
 
 	private static final String SPACE = " ";
@@ -29,6 +33,11 @@ public class GamePrinter {
 
 	private Game game;
 
+	/**
+	 * Construct and initialize a GamePrinter
+	 * 
+	 * @param game the game that the GamePrinter works for
+	 */
 	public GamePrinter(Game game) {
 		this.game = game;
 
@@ -43,7 +52,9 @@ public class GamePrinter {
 	protected String getInfo() {
 		StringBuilder buffer = new StringBuilder();
 
-		// TODO fill your code
+		buffer.append(game.getNumOfCyclesInfo());
+		buffer.append(game.getSunCoinsInfo());
+		buffer.append(game.getRemainingZombiesInfo());
 
 		return buffer.toString();
 	}
@@ -85,7 +96,6 @@ public class GamePrinter {
 	public String endMessage() {
 		StringBuilder buffer = new StringBuilder(Messages.GAME_OVER);
 
-		// TODO your code here
 		if (game.hasPlayerWon()) {
 			buffer.append("\n" + Messages.PLAYER_WINS);
 		}
