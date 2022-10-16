@@ -5,8 +5,17 @@ package tp1.p1.control;
  *
  */
 public enum Level {
-	EASY (3, 0.1), 
+	/**
+	 * Easy level in which has 3 zombies in total with frequency of 0.1
+	 */
+	EASY (3, 0.1),
+	/**
+	 * Hard level in which has 5 zombies in total with frequency of 0.2
+	 */
 	HARD(5, 0.2), 
+	/**
+	 * Easy level in which has 10 zombies in total with frequency of 0.3
+	 */
 	INSANE(10, 0.3);
 	
 	private String levelName;
@@ -15,15 +24,31 @@ public enum Level {
 	
 	private double zombieFrequency;
 
+	/**
+	 * Construct and initialize a Level 
+	 * 
+	 * @param numberOfZombies number of zombies in this level
+	 * @param zombieFrequency frequency of zombies in this level
+	 */
 	private Level(int numberOfZombies, double zombieFrequency) {
 		this.numberOfZombies = numberOfZombies;
 		this.zombieFrequency = zombieFrequency;
 	}
 	
+	/**
+	 * Get the number of zombies
+	 * 
+	 * @return number of zombies
+	 */
 	public int getNumberOfZombies() {
 		return numberOfZombies;
 	}
 	
+	/**
+	 * Get zombie frequency
+	 * 
+	 * @return zombie frequency
+	 */
 	public double getZombieFrequency() {
 		return zombieFrequency;
 	}
@@ -36,7 +61,6 @@ public enum Level {
 	 */
 	public static Level valueOfIgnoreCase(String inputString) {
 		for (Level level : Level.values()) {
-			// System.out.println(level.name());
 			if (level.name().equalsIgnoreCase(inputString)) {
 				return level;
 			}
