@@ -23,6 +23,12 @@ public class Controller {
 	private GamePrinter gamePrinter;
 	
 
+	/**
+	 * Construct and initialize a Controller
+	 * 
+	 * @param game the game that the Controller controls
+	 * @param scanner the Scanner used for reading user's input
+	 */
 	public Controller(Game game, Scanner scanner) {
 		this.game = game;
 		this.scanner = scanner;
@@ -62,69 +68,116 @@ public class Controller {
 	/**
 	 * Runs the game logic.
 	 */
-	public void run() {
-		game.printGameStateInfo();
-		System.out.println(gamePrinter);
-		// TODO fill your code;
+		public void run() {
+		// Print the initial game state and board
+		printGame();
+		
 		while(true) {
+			// If a zombie is added to the game, it will be added at the very beginning of the cycle
 			boolean temp = game.addNewZombie();
-			String[] input = getUserInput();
+			String[] input = getUserInput();	
 			
-			while (input[0].equals("add") && processAddCommand(input) == false) {
+			// Repeat getting user command if <code>add</code> command is not successfully executed
+			while (input[0].equals("help")) {
+				executeHelpCommand();
+				input = getUserInput();
+			}
+			
+			while (input[0].equals("list")) {
+				executeListCommand();
+				input = getUserInput();
+			}
+			
+			while (input[0].equals("add") && executeAddCommand(input) == false) {
 				input = getUserInput();
 			}
 			
 			if (input[0].equals("none")) {
-				processNoneCommand();
+				executeNoneCommand();
 			}
 			
 			if (input[0].equals("exit")) {
+				printGame();
 				System.out.println(Messages.GAME_OVER);
+				System.out.println(Messages.PLAYER_QUITS);
 				return;
 			}
 			
-			game.printGameStateInfo();
-			System.out.println(gamePrinter);
 			
-			System.out.print(gamePrinter.endMessage());
+			if (input[0].equals("reset")) {
+				executeResetCommand();
+				printGame();
+				continue;
+			}
+			
+
+			printGame();
+			
+			if (game.hasFoundWinner()) {
+				System.out.println(gamePrinter.endMessage());
+				return;
+			}
 		}
 	}
 
 	
+	/**
+	 * Repeat getting user command until the user enters a valid command
+	 * 
+	 * @return user command as words
+	 */
 	private String[] getUserInput() {
-		boolean commandValidity = true;
-		String[] processedInput = null;
-		do {
-			System.out.println("Command > ");
-			System.out.print("[DEBUG] Executing: ");
-			String userInput = scanner.nextLine();
-			processedInput = CommandPreprocessor.splitInput(userInput);
-			commandValidity = CommandPreprocessor.checkValidity(processedInput);
+		String[] input = prompt();
+		while (CommandPreprocessor.checkValidity(input) == false) {
+			input = prompt();
 		}
-		while (commandValidity == false);
-		return processedInput;
+		return input;
 	}
 	
-	private boolean processAddCommand(String[] input) {
+	/**
+	 * Execute <code>add</code> command
+	 * 
+	 * @param input user command as words
+	 * 
+	 * @return <code>true</code> if the add command is successfully executed
+	 */
+	private boolean executeAddCommand(String[] input) {
 		String plantName = input[1];
 		int col = Integer.parseInt(input[2]);
 		int row = Integer.parseInt(input[3]);
-		boolean addingResult = game.addPlant(plantName, row, col);
-		if (addingResult) {
-			System.out.println(plantName + " added at (" + col+ ", " + row + ") " + "successfully");
-		}
-		else {
-			System.out.println(plantName + " added at (" + col + ", " + row + ") " + "unsuccessfully");
-			
-		}
+		boolean addingResult = game.addNewPlant(plantName, row, col);
 		if (addingResult) {
 			game.update();
 		}
 		return addingResult;
 	}
 	
-	private void processNoneCommand() {
+	/**
+	 * Execute <code>update</code> command
+	 */
+	private void executeNoneCommand() {
 		game.update();
 	}
-
+	
+	/**
+	 * Execute <code>help</code> command
+	 */
+	private void executeHelpCommand() {
+		System.out.println(Messages.HELP);
+	}
+	
+	/**
+	 * Execute <code>update</code> command
+	 */
+	private void executeListCommand() {
+		System.out.println(Messages.LIST);
+	}
+	
+	/**
+	 * Execute <code>reset</code> command
+	 */
+	private void executeResetCommand() {
+		game.restart();
+	}
+	
 }
