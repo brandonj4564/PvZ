@@ -55,7 +55,7 @@ public class PlantsVsZombies {
 			usage();
 			return;
 		}
-		
+
 		System.out.println(Messages.WELCOME);
 		System.out.println(String.format(Messages.CONFIGURED_LEVEL, level.name()));
 		System.out.println(String.format(Messages.CONFIGURED_SEED, seed));

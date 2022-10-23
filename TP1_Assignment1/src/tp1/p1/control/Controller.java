@@ -15,7 +15,7 @@ import tp1.p1.logic.ZombiesManager;
  *
  */
 public class Controller {
-
+	
 	private Game game;
 
 	private Scanner scanner;

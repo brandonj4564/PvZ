@@ -1,11 +1,13 @@
 package tp1.p1.logic;
-import tp1.p1.control.Level;
-import tp1.p1.logic.gameobjects.*;
-import tp1.p1.view.Messages;
 
 import java.util.Random;
 
-
+import tp1.p1.control.Level;
+import tp1.p1.logic.PlantsManager;
+import tp1.p1.logic.ZombiesManager;
+import tp1.p1.logic.gameobjects.Peashooter;
+import tp1.p1.logic.gameobjects.Sunflower;
+import tp1.p1.view.Messages;
 
 /**
  * Encapsulate the logic and state of the game
@@ -20,7 +22,7 @@ public class Game {
 	 * Number of columns in a game
 	 */
 	public static final int NUM_COLS = 8;
-	
+
 	private int currCycleNumber;
 	private PlantsManager plantsManager;
 	private Random rand;
@@ -28,32 +30,34 @@ public class Game {
 	private long seed;
 	private Level level;
 	private int sunCoins;
-	
+
 	/**
 	 * Construct and initial a game
 	 * 
-	 * @param inputSeed input seed used for pseudo-random generator 
+	 * @param inputSeed  input seed used for pseudo-random generator
 	 * @param inputLevel input level of the game
 	 */
 	public Game(long inputSeed, Level inputLevel) {
 		seed = inputSeed;
 		level = inputLevel;
 		rand = new Random(seed);
-		
+
 		plantsManager = new PlantsManager(this);
 		zombiesManager = new ZombiesManager(this, level, rand);
-		
+
 		currCycleNumber = 0;
 		sunCoins = 50;
 	}
-	
+
 	/**
-	 * Get string representation of a game object at position <code>(col, row)</code> if it exists
+	 * Get string representation of a game object at position
+	 * <code>(col, row)</code> if it exists
 	 * 
 	 * @param col column position of the game object
 	 * @param row row position of the game object
 	 * 
-	 * @return string representation of a game object if it exists at position <code>(col, row)</code>, otherwise return an empty string
+	 * @return string representation of a game object if it exists at position
+	 *         <code>(col, row)</code>, otherwise return an empty string
 	 */
 	public String positionToString(int col, int row) {
 		// This procedure acts as an short-circuit evaluation
@@ -65,16 +69,17 @@ public class Game {
 		if (output.isEmpty()) {
 			output = zombiesManager.getZombieStringAt(row, col);
 		}
-		
+
 		return output;
 	}
-	
+
 	/**
-	 * Add new plant based one the provided name and position and pay for the new plant is the adding is successful
+	 * Add new plant based one the provided name and position and pay for the new
+	 * plant is the adding is successful
 	 * 
 	 * @param plantName name of the new plant
-	 * @param row row position of the new plant
-	 * @param col column position of the new plant
+	 * @param row       row position of the new plant
+	 * @param col       column position of the new plant
 	 * 
 	 * @return <code>true</code> if the new plant is successfully added to the game
 	 */
@@ -85,8 +90,7 @@ public class Game {
 		}
 		return addingResult;
 	}
-	
-	
+
 	/**
 	 * Add new zombie to game
 	 * 
@@ -95,7 +99,7 @@ public class Game {
 	public boolean addNewZombie() {
 		return zombiesManager.addZombie();
 	}
-	
+
 	/**
 	 * Update number of sun coins after paying a cost
 	 * 
@@ -104,7 +108,7 @@ public class Game {
 	private void updateBalanceAfterPay(int cost) {
 		sunCoins -= cost;
 	}
-	
+
 	/**
 	 * Pay for a plant based on its name
 	 * 
@@ -113,65 +117,72 @@ public class Game {
 	private void payForPlant(String plantName) {
 		if (plantName.equals("sunflower")) {
 			updateBalanceAfterPay(Sunflower.COST);
-		} 
+		}
 		if (plantName.equals("peashooter")) {
 			updateBalanceAfterPay(Peashooter.COST);
 		}
 	}
-	
+
 	/**
 	 * Check if number of coins is enough to buy a plant
 	 * 
 	 * @param cost number of coins required to buy a plant
 	 * 
-	 * @return <code>true</code> if the number of coins left is enough to buy the plant
+	 * @return <code>true</code> if the number of coins left is enough to buy the
+	 *         plant
 	 */
 	public boolean hasEnoughMoney(int cost) {
 		return sunCoins >= cost;
 	}
-	
-	
+
 	/**
-	 * Check if the plant at position <code>(row, col)</code> is attacked by a zombie
+	 * Check if the plant at position <code>(row, col)</code> is attacked by a
+	 * zombie
 	 * 
 	 * @param row row position of the plant
 	 * @param col column position of the plant
 	 * 
-	 * @return <code>true</code> if the plant at position <code>(row, col)</code> is attacked by a zombie
+	 * @return <code>true</code> if the plant at position <code>(row, col)</code> is
+	 *         attacked by a zombie
 	 */
 	public boolean checkIfAttackedByZombie(int row, int col) {
-		// A peashooter can not attack a zombie in queue (newly-added) 
-		// A zombie in queue (newly-added) can still attack a peashooter in reach (next to and on the left of the zombie)
+		// A peashooter can not attack a zombie in queue (newly-added)
+		// A zombie in queue (newly-added) can still attack a peashooter in reach (next
+		// to and on the left of the zombie)
 		return zombiesManager.checkForEmptyTileAt(row, col + 1) == false;
 	}
-	
+
 	/**
 	 * Check if a peashooter attacks the zombie at position (row, col)
 	 * 
 	 * @param row row position of the zombie
 	 * @param col column position of the zombie
 	 * 
-	 * @return <code>true</code> if a peashooter attacks the zombie at position (row, col) 
+	 * @return <code>true</code> if a peashooter attacks the zombie at position
+	 *         (row, col)
 	 */
 	public boolean checkIfAttackedByPeashooter(int row, int col) {
-		// Peashooters only attack on-board zombies 
+		// Peashooters only attack on-board zombies
 		if (col == Game.NUM_COLS) {
 			return false;
 		}
 		return plantsManager.anyoneAttackZombieAt(row, col);
 	}
-	
+
 	/**
-	 * Check if there are no plants and other zombies next to and on the left of the zombie at position <code>(row, col)</code>
+	 * Check if there are no plants and other zombies next to and on the left of the
+	 * zombie at position <code>(row, col)</code>
+	 * 
 	 * @param row row condition of the zombie
 	 * @param col column condition of the zombie
 	 * 
-	 * @return <code>true</code> f there are no plants and other zombies next to and on the left of the zombie at position <code>(row, col)</code>
+	 * @return <code>true</code> f there are no plants and other zombies next to and
+	 *         on the left of the zombie at position <code>(row, col)</code>
 	 */
 	public boolean doesAllowZombieMoveForward(int row, int col) {
 		return plantsManager.checkForEmptyTileAt(row, col - 1) && zombiesManager.checkForEmptyTileAt(row, col - 1);
 	}
-	
+
 	/**
 	 * Check whether a tile is not occupied by a zombie
 	 * 
@@ -183,19 +194,19 @@ public class Game {
 	public boolean isTileEmptyFromZombie(int row, int col) {
 		return zombiesManager.checkForEmptyTileAt(row, col);
 	}
-	
+
 	/**
 	 * Update game state
 	 */
 	public void update() {
 		cycleCount();
-		
+
 		plantsManager.update();
 		zombiesManager.update();
-		
+
 		removeDeadEntities();
 	}
-	
+
 	/**
 	 * Remove dead game objects at the end of each cycle
 	 */
@@ -203,30 +214,30 @@ public class Game {
 		plantsManager.removeDeadPlants();
 		zombiesManager.removeDeadZombies();
 	}
-	
+
 	/**
 	 * Update game cycle number
 	 */
 	private void cycleCount() {
 		currCycleNumber++;
 	}
-	
+
 	/**
 	 * Perform action after receiving new sun coins
 	 */
 	public void receiveNewSunCoins() {
 		sunCoins += Sunflower.PRODUCED_SUN_COINS;
 	}
-	
+
 	/**
-	 * Check if the player wins 
+	 * Check if the player wins
 	 * 
 	 * @return <code>true</code> if the player wins
 	 */
 	public boolean hasPlayerWon() {
 		return zombiesManager.haveZombiesLost();
 	}
-	
+
 	/**
 	 * Check if the zombies win
 	 * 
@@ -235,7 +246,7 @@ public class Game {
 	public boolean hasZombiesWon() {
 		return zombiesManager.checkIfZombiesWon();
 	}
-	
+
 	/**
 	 * Check if the game winner has been found or if the game should end
 	 * 
@@ -244,7 +255,7 @@ public class Game {
 	public boolean hasFoundWinner() {
 		return hasPlayerWon() || hasZombiesWon();
 	}
-	
+
 	/**
 	 * Restart game to initial configuration
 	 */
@@ -252,11 +263,11 @@ public class Game {
 		currCycleNumber = 0;
 		sunCoins = 50;
 		rand = new Random(seed);
-		
+
 		plantsManager.restart();
 		zombiesManager.restart(rand);
 	}
-	
+
 	/**
 	 * Get information about current the current number of cycle
 	 * 
@@ -265,7 +276,7 @@ public class Game {
 	public String getNumOfCyclesInfo() {
 		return Messages.NUMBER_OF_CYCLES + " " + currCycleNumber + "\n";
 	}
-	
+
 	/**
 	 * Get information about the current number of sun coins
 	 * 
@@ -274,7 +285,7 @@ public class Game {
 	public String getSunCoinsInfo() {
 		return Messages.NUMBER_OF_COINS + " " + sunCoins + "\n";
 	}
-	
+
 	/**
 	 * Get information about the remaining zombies
 	 * 
@@ -283,5 +294,5 @@ public class Game {
 	public String getRemainingZombiesInfo() {
 		return zombiesManager.getRemainingZombiesInfo();
 	}
-	
+
 }
