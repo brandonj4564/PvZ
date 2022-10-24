@@ -1,0 +1,90 @@
+package tp1.p1.control;
+
+/**
+ * Represents the allowed levels in the game.
+ *
+ */
+public enum Level {
+	/**
+	 * Easy level in which has 3 zombies in total with frequency of 0.1
+	 */
+	EASY (3, 0.1),
+	/**
+	 * Hard level in which has 5 zombies in total with frequency of 0.2
+	 */
+	HARD(5, 0.2), 
+	/**
+	 * Easy level in which has 10 zombies in total with frequency of 0.3
+	 */
+	INSANE(10, 0.3);
+	
+	private String levelName;
+
+	private int numberOfZombies;
+	
+	private double zombieFrequency;
+
+	/**
+	 * Construct and initialize a Level 
+	 * 
+	 * @param numberOfZombies number of zombies in this level
+	 * @param zombieFrequency frequency of zombies in this level
+	 */
+	private Level(int numberOfZombies, double zombieFrequency) {
+		this.numberOfZombies = numberOfZombies;
+		this.zombieFrequency = zombieFrequency;
+	}
+	
+	/**
+	 * Get the number of zombies
+	 * 
+	 * @return number of zombies
+	 */
+	public int getNumberOfZombies() {
+		return numberOfZombies;
+	}
+	
+	/**
+	 * Get zombie frequency
+	 * 
+	 * @return zombie frequency
+	 */
+	public double getZombieFrequency() {
+		return zombieFrequency;
+	}
+
+	/**
+	 * Parse an string and return any matching level
+	 * 
+	 * @param inputString string to parse
+	 * @return the parsed {@link Level} or <code>null</code> if none match.
+	 */
+	public static Level valueOfIgnoreCase(String inputString) {
+		for (Level level : Level.values()) {
+			if (level.name().equalsIgnoreCase(inputString)) {
+				return level;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns a string representation of all the levels joined with <code>separator</code>
+	 * 
+	 * @param separator String used as separator
+	 * 
+	 * @return the string resulted from joining all levels using <code>separator</code>
+	 */
+	public static String all(String separator) {
+		StringBuilder buffer = new StringBuilder();
+		int levelCount = 0;
+		for (Level level : Level.values()) {
+			if (levelCount > 0) {
+				buffer.append(separator);
+			}
+			buffer.append(level.name());
+			levelCount++;
+		}
+		return buffer.toString();
+	}
+}
