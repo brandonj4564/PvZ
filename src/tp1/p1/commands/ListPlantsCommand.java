@@ -5,8 +5,8 @@ import static tp1.p1.view.Messages.error;
 import tp1.p1.logic.Game;
 import tp1.p1.view.Messages;
 
-public class NoneCommand extends Command {
-	public NoneCommand() {
+public class ListPlantsCommand extends Command {
+	public ListPlantsCommand() {
 		super();
 	}
 
@@ -18,7 +18,7 @@ public class NoneCommand extends Command {
 	 * @return <code>true</code> if the command matches
 	 */
 	public boolean matchCommand(String[] input) {
-		if (input[0].equals("none") || input[0].equals("n") || input[0].isEmpty()) {
+		if (input[0].equals("list") || input[0].equals("l")) {
 			if (input.length != 1) {
 				System.out.println(error(Messages.INVALID_COMMAND));
 				return false;
@@ -29,11 +29,12 @@ public class NoneCommand extends Command {
 	}
 
 	public Command create(String[] command) {
-		return new NoneCommand();
+		return new ListPlantsCommand();
 
 	}
 
 	public boolean execute(Game game) {
-		return true;
+		System.out.println(Messages.LIST);
+		return false;
 	}
 }

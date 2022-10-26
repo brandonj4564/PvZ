@@ -1,14 +1,14 @@
 package tp1.p1.control;
 
-import static tp1.p1.view.Messages.*;
-import tp1.utils.CommandPreprocessor;
+import static tp1.p1.view.Messages.debug;
 
 import java.util.Scanner;
 
+import tp1.p1.commands.Command;
 import tp1.p1.logic.Game;
 import tp1.p1.view.GamePrinter;
 import tp1.p1.view.Messages;
-import tp1.p1.logic.ZombiesManager;
+import tp1.utils.CommandPreprocessor;
 
 /**
  * Accepts user input and coordinates the game execution logic.
@@ -21,12 +21,11 @@ public class Controller {
 	private Scanner scanner;
 
 	private GamePrinter gamePrinter;
-	
 
 	/**
 	 * Construct and initialize a Controller
 	 * 
-	 * @param game the game that the Controller controls
+	 * @param game    the game that the Controller controls
 	 * @param scanner the Scanner used for reading user's input
 	 */
 	public Controller(Game game, Scanner scanner) {
@@ -36,8 +35,8 @@ public class Controller {
 	}
 
 	/**
-	 * Draw / Paint the game.
-	 * Describe the output of the game state at the end of each cycle
+	 * Draw / Paint the game. Describe the output of the game state at the end of
+	 * each cycle
 	 */
 	private void printGame() {
 		System.out.println(gamePrinter);
@@ -68,58 +67,97 @@ public class Controller {
 	/**
 	 * Runs the game logic.
 	 */
-		public void run() {
-		// Print the initial game state and board
+//	public void run() {
+//		// Print the initial game state and board
+//		printGame();
+//
+//		while (true) {
+//			boolean temp = game.addNewZombie();
+//			String[] input = getUserInput();
+//
+//			// Repeat getting user command if <code>add</code> command is not successfully
+//			// executed
+//			while (input[0].equals("help")) {
+//				executeHelpCommand();
+//				input = getUserInput();
+//			}
+//
+//			while (input[0].equals("list")) {
+//				executeListCommand();
+//				input = getUserInput();
+//			}
+//
+//			while (input[0].equals("add") && executeAddCommand(input) == false) {
+//				input = getUserInput();
+//			}
+//
+//			if (input[0].equals("none")) {
+//				executeNoneCommand();
+//			}
+//
+//			if (input[0].equals("exit")) {
+//				printGame();
+//				System.out.println(Messages.GAME_OVER);
+//				System.out.println(Messages.PLAYER_QUITS);
+//				return;
+//			}
+//
+//			if (input[0].equals("reset")) {
+//				executeResetCommand();
+//				printGame();
+//				continue;
+//			}
+//
+//			printGame();
+//
+//			if (game.hasFoundWinner()) {
+//				System.out.println(gamePrinter.endMessage());
+//				return;
+//			}
+//		}
+//	}
+
+	/**
+	 * Runs the game's logic. V2
+	 */
+	public void run() {
+		boolean refreshDisplay = false;
 		printGame();
-		
-		while(true) {
+
+		while (true) {
 			boolean temp = game.addNewZombie();
-			String[] input = getUserInput();	
-			
-			// Repeat getting user command if <code>add</code> command is not successfully executed
-			while (input[0].equals("help")) {
-				executeHelpCommand();
-				input = getUserInput();
+			if (refreshDisplay) {
+				game.update();
+				printGame();
 			}
-			
-			while (input[0].equals("list")) {
-				executeListCommand();
-				input = getUserInput();
+
+			String[] words = prompt();
+
+			if (words.length == 0) {
+				System.out.println(Messages.UNKNOWN_COMMAND);
+			} else {
+				Command command = Command.parse(words);
+				if (command != null) {
+					refreshDisplay = game.execute(command);
+				} else {
+					System.out.println(Messages.UNKNOWN_COMMAND);
+					refreshDisplay = false;
+				}
 			}
-			
-			while (input[0].equals("add") && executeAddCommand(input) == false) {
-				input = getUserInput();
-			}
-			
-			if (input[0].equals("none")) {
-				executeNoneCommand();
-			}
-			
-			if (input[0].equals("exit")) {
+
+			if (game.hasFoundWinner()) {
+				System.out.println(gamePrinter.endMessage());
+				return;
+			} else if (game.playerQuits()) {
 				printGame();
 				System.out.println(Messages.GAME_OVER);
 				System.out.println(Messages.PLAYER_QUITS);
 				return;
 			}
-			
-			
-			if (input[0].equals("reset")) {
-				executeResetCommand();
-				printGame();
-				continue;
-			}
-			
 
-			printGame();
-			
-			if (game.hasFoundWinner()) {
-				System.out.println(gamePrinter.endMessage());
-				return;
-			}
 		}
 	}
 
-	
 	/**
 	 * Repeat getting user command until the user enters a valid command
 	 * 
@@ -132,7 +170,7 @@ public class Controller {
 		}
 		return input;
 	}
-	
+
 	/**
 	 * Execute <code>add</code> command
 	 * 
@@ -150,33 +188,33 @@ public class Controller {
 		}
 		return addingResult;
 	}
-	
+
 	/**
 	 * Execute <code>update</code> command
 	 */
 	private void executeNoneCommand() {
 		game.update();
 	}
-	
+
 	/**
 	 * Execute <code>help</code> command
 	 */
 	private void executeHelpCommand() {
 		System.out.println(Messages.HELP);
 	}
-	
+
 	/**
 	 * Execute <code>update</code> command
 	 */
 	private void executeListCommand() {
 		System.out.println(Messages.LIST);
 	}
-	
+
 	/**
 	 * Execute <code>reset</code> command
 	 */
 	private void executeResetCommand() {
 		game.restart();
 	}
-	
+
 }
